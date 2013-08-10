@@ -71,7 +71,7 @@ var svg = d3.select("body").append("svg")
 
 var g = svg.append("g");
 
-d3.json("us.json", function(error, us) {
+d3.json("/us.json", function(error, us) {
 	g.append("g")
       .attr("id", "states")
     .selectAll("path")
@@ -90,7 +90,7 @@ d3.json("us.json", function(error, us) {
            .data(data)
            .enter()
            .append("image")
-			.attr("xlink:href", "orioleslogo.png")
+			.attr("xlink:href", "/orioleslogo.png")
 			.attr("width", "60")
 			.attr("height", "60")
 			.attr("x", function(d) {
