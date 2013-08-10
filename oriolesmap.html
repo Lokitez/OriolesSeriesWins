@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.background {
+  fill: none;
+  pointer-events: all;
+}
+
+#states {
+  fill: #aaaaaa;
+}
+
+#states .active {
+  fill: #ff4400;
+  fill-opacity: .75;
+}
+
+#state-borders {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 1.5px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  pointer-events: none;
+}
+
+path.link {
+  fill: none;
+  stroke: #666666;
+  stroke-width: 1.5px;
+}
+
+.stroke {
+  fill: none;
+  stroke: #000;
+  stroke-width: 3px;
+}
+
+.fill {
+  fill: #fff;
+}
+
+</style>
+<body>
+    <h2>
+      <span>Orioles Series Wins in 2013</span>
+    </h2>
+	
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script src="http://d3js.org/d3.geo.projection.v0.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<script>
+
+var width = 1000,
+    height = 600,
+    centered;
+
+var projection = d3.geo.albersUsa()
+    .scale(1070)
+    .translate([width / 2, height / 2]);
+
+var path = d3.geo.path()
+    .projection(projection);
+
+var graticule = d3.geo.graticule();
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+var g = svg.append("g");
+
+d3.json("us.json", function(error, us) {
+	g.append("g")
+      .attr("id", "states")
+    .selectAll("path")
+      .data(topojson.feature(us, us.objects.states).features)
+    .enter().append("path")
+      .attr("d", path)
+      .on("click", clicked);
+
+	g.append("path")
+      .datum(topojson.mesh(us, us.objects.states, function(a, b) { return a !== b; }))
+      .attr("id", "state-borders")
+      .attr("d", path);
+
+	d3.csv("oriolesseries.csv", function(error, data) {
+        g.selectAll("image").data([0])
+           .data(data)
+           .enter()
+           .append("image")
+			.attr("xlink:href", "orioleslogo.png")
+			.attr("width", "60")
+			.attr("height", "60")
+			.attr("x", function(d) {
+                   return projection([d.lon, d.lat])[0]-30;
+			})
+			.attr("y", function(d) {
+                   return projection([d.lon, d.lat])[1]-30;
+			})
+
+	});
+
+});
+
+function clicked(d) {
+  var x, y, k;
+
+  if (d && centered !== d) {
+    var centroid = path.centroid(d);
+    x = centroid[0];
+    y = centroid[1];
+    k = 4;
+    centered = d;
+  } else {
+    x = width / 2;
+    y = height / 2;
+    k = 1;
+    centered = null;
+  }
+
+  g.selectAll("path")
+      .classed("active", centered && function(d) { return d === centered; });
+
+  g.transition()
+      .duration(750)
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")scale(" + k + ")translate(" + -x + "," + -y + ")")
+      .style("stroke-width", 1.5 / k + "px");
+}
+
+	</script>
+  </body>
+</html>
