@@ -71,7 +71,7 @@ var svg = d3.select("body").append("svg")
 
 var g = svg.append("g");
 
-d3.json("/us.json", function(error, us) {
+d3.json("https://github.com/Lokitez/OriolesSeriesWins/blob/master/us.json", function(error, us) {
 	g.append("g")
       .attr("id", "states")
     .selectAll("path")
@@ -85,12 +85,12 @@ d3.json("/us.json", function(error, us) {
       .attr("id", "state-borders")
       .attr("d", path);
 
-	d3.csv("oriolesseries.csv", function(error, data) {
+	d3.csv("https://github.com/Lokitez/OriolesSeriesWins/blob/master/oriolesseries.csv", function(error, data) {
         g.selectAll("image").data([0])
            .data(data)
            .enter()
            .append("image")
-			.attr("xlink:href", "/orioleslogo.png")
+			.attr("xlink:href", "https://github.com/Lokitez/OriolesSeriesWins/blob/master/orioleslogo.png")
 			.attr("width", "60")
 			.attr("height", "60")
 			.attr("x", function(d) {
